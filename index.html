@@ -316,7 +316,7 @@
 
         <div class="buttons">
             <button class="btn btn-primary" onclick="resetGame()">🔄 Nuova Partita</button>
-            <a href="https://ilcanterano.blogspot.com/2025/10/smart-working-sicurezza-e-benessere.html" class="btn btn-secondary">🏠 Torna alla Home</a>
+            <a href="#" class="btn btn-secondary">🏠 Torna alla Home</a>
         </div>
     </div>
 
@@ -438,15 +438,39 @@
                     cell.dataset.row = row;
                     cell.dataset.col = col;
                     
+                    // Mouse events
                     cell.addEventListener('mousedown', () => startSelection(row, col));
                     cell.addEventListener('mouseenter', () => continueSelection(row, col));
                     cell.addEventListener('mouseup', endSelection);
+                    
+                    // Touch events per mobile
+                    cell.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        startSelection(row, col);
+                    });
+                    
+                    cell.addEventListener('touchmove', (e) => {
+                        e.preventDefault();
+                        const touch = e.touches[0];
+                        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+                        if (element && element.classList.contains('cell')) {
+                            const touchRow = parseInt(element.dataset.row);
+                            const touchCol = parseInt(element.dataset.col);
+                            continueSelection(touchRow, touchCol);
+                        }
+                    });
+                    
+                    cell.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        endSelection();
+                    });
                     
                     gridElement.appendChild(cell);
                 }
             }
 
             document.addEventListener('mouseup', endSelection);
+            document.addEventListener('touchend', endSelection);
         }
 
         function renderWordsList() {
